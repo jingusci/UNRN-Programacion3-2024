@@ -21,9 +21,6 @@ def esperar_nuevo_cliente():
     '''
     pass
 
-def consultar_tipo_estacionamiento():
-    tipo = "General" #ejemplo
-    return tipo
 
 def entregar_vuelto(monto_ingresado, valor_estacionamiento):
     '''

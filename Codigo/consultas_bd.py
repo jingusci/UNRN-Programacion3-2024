@@ -12,6 +12,13 @@ Alumnos:
 
 # Prototipos de funciones para conectar con el trabajo de los otros equipos:
 
+
+def consultar_tipo_estacionamiento():
+    tipo = "General" #ejemplo
+    return tipo
+
+
+
 def consultar_precio_estacionamiento(tipo_estacionamiento):
     '''
     Consulta el precio en la Base de Datos de otro grupo que tiene
