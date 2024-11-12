@@ -8,6 +8,7 @@ Alumnos:
 '''
 
 import re
+from gradio_client import Client, handle_file
 
 palabras_claves = {
         "ARS_10000":    ['10000','argentina'],
@@ -29,17 +30,19 @@ palabras_claves = {
         "USD_1":        ['1','united', 'states', 'america']
     }
 
-# TODO: Esta tiene que llamar a todas las sub-funciones. 
-# def identificar_billete():
-#     '''
-#     Interactúa con la máquina lectora de billetes (¿y posiblemente con una
-#     base de conocimiento en prolog? eso no nos quedó claro), devuelve los
-#     datos del billete ingresado.
-#     '''
-#     valido = True  # Simulación de billete válido
-#     denominacion = 500  # Ejemplo de denominación en ARS
-#     moneda = "ARS"  # Puede ser "ARS" o "USD"
-#     return valido, denominacion, moneda
+def identificar_billete(path):
+    '''
+    Llamada a Gradio y procesamiento de la descripcion.
+    '''
+
+    client = Client("SkalskiP/florence-sam")
+    result = client.predict(mode_dropdown= 'caption + grounding + image masks',
+                            image_input=handle_file(path),
+                            text_input="Hello!",
+                            api_name="/process_image"
+                            )
+    valido, denominacion, moneda = reconocer_texto(texto=result[1])
+    return valido, denominacion, moneda
 
 def reconocer_texto(texto):
     '''
