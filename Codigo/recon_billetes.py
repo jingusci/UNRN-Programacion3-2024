@@ -82,30 +82,4 @@ def reconocer_texto(texto):
 
 # Ejecución del programa
 if __name__ == "__main__":
-    # Ejemplo de reconocimiento de texto
-    texto_true = """The image is a photograph of a 100 dollar bill. 
-               The bill is rectangular in shape and has a blue border around the edges. 
-               On the left side of the bill, there is a portrait of Benjamin Franklin, 
-               the former President of the United States. 
-               He is shown in profile, with his head turned slightly to the left and
-               his eyes looking off to the side. On the right side, there are two green seals, 
-               one on each side, with the words "United States of America" and the other on the 
-               top and bottom. The seal on the left is the Federal Reserve Note, 
-               which is a seal of the American state of New York. 
-               The note also has the number "100" written on it, 
-               indicating that it is a 100-dollar bill. The bill appears to be new and unused, 
-               with no visible signs of wear or tear. """
-
-    valido, denominacion, moneda = reconocer_texto(texto_true)
-    print(valido, denominacion, moneda)
-
-    texto_false_1 = """100 argentina 50 united"""
-    texto_false_2 = """1 argentina"""
-    texto_false_3 = """hola"""
-    
-    valido, denominacion, moneda = reconocer_texto(texto_false_1)
-    print(valido, denominacion, moneda)
-    valido, denominacion, moneda = reconocer_texto(texto_false_2)
-    print(valido, denominacion, moneda)
-    valido, denominacion, moneda = reconocer_texto(texto_false_3)
-    print(valido, denominacion, moneda)
+    pass
