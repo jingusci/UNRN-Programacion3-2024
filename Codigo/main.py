@@ -32,13 +32,16 @@ def entregar_vuelto(monto_ingresado, valor_estacionamiento):
     vuelto = monto_ingresado - valor_estacionamiento
 
     # Calculo de billetes a entregar (consulta al prolog)
-    vuelto_completo = calculo_vuelto_prolog(vuelto) 
-    
+    vuelto_completo = calculo_vuelto_prolog(vuelto)
+
+    # Encontrar vuelto valido
+    vuelto_valido = encontrar_vuelto_valido(vuelto_completo)
+
     # Resultado del vuelto -> Impresion por pantalla
     # TODO - Cambiar a un return
-    # TODO - Estoy solo entregando la opcion 1.
     print(f"Vuelto a entregar: ${vuelto}.\n")
-    print(f"Billetes a entregar: \n{(vuelto_completo['Resultado_1'])}")
+    # print(vuelto_valido_to_string(vuelto_valido))
+
 
 def recibir_billetes(valor_estacionamiento):
     '''

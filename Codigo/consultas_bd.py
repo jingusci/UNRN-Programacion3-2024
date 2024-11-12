@@ -54,3 +54,26 @@ def registrar_ingreso(tipo_estacionamiento, monto):
     las bases de datos que corresponda.
     '''
     print(f'Se registró un ingreso de tipo {tipo_estacionamiento}, se cobró {monto}.')
+
+
+def consultar_caja_registradora():
+    '''
+    Consulta el monto actual en la caja registradora.
+    '''
+
+    # TODO - Consultar la base de datos para cantidad de cada tipo de billetes
+    
+    cantidad_billetes = {
+        "Billetes_10000": 10,
+        "Billetes_2000": 5,
+        "Billetes_1000": 2,
+        "Billetes_500": 10,
+        "Billetes_200": 5,
+        "Billetes_100": 2,
+        "Billetes_50": 10,
+        "Billetes_20": 5,
+        "Billetes_10": 2,
+        "Billetes_5": 10
+    }
+
+    return cantidad_billetes
