@@ -15,7 +15,7 @@ def calculo_vuelto_prolog(vuelto):
 
     ### Abrir el archivo prolog
     prolog = Prolog()
-    prolog.consult("billetes.pl")
+    prolog.consult("billetes_v2.pl")
 
     # Ejecutar la consulta prolog y convertir el resultado en una lista
     # Esta lista contiene todas las posibilidades de vuelto que se pueden dar
