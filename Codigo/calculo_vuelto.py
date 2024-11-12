@@ -1,3 +1,30 @@
+'''
+Programación 3 - 2024 - Trabajo Integrador Final
+Subproblema 2 - Grupo F
+Alumnos:
+ - Javier Ingusci
+ - Enrique Mariotti
+ - Joaquín Rodríguez
+
+ Archivo calculo_vuelto.py
+
+ Objetivo: Identificar que billetes entregar como vuelto
+ Metodología: 
+    -   Funcion principal que recibe como input que cantidad de vuelto entregar
+    -   Consulta a un archivo prolog que calcula las combinaciones de billetes 
+        que son posibles para entregar
+    -   Procesamiento de la salida del mensaje de prolog y conversión en diccionario
+    -   Seleccion de vuelto valido segun billetes disponibles en la caja registradora
+
+Input: Valor de vuelto (int)  
+Salida: Diccionario con billetes a entregar
+
+Funcion extra:
+    string para mostrar en consola con los billetes a entregar 
+ 
+ '''
+
+
 # Importar las librerias
 from pyswip import Prolog
 
@@ -5,10 +32,16 @@ from consultas_bd import consultar_caja_registradora
 
 def calculo_vuelto_prolog(vuelto):
     '''
-    Esta funcion recibe un monto de vuelto y devuelve una lista con todas las posibles 
-    combinaciones de billetes a dar de vuelto.
-    Redondea el vuelto al multiplo de 5 mas cercano.
+    Esta funcion recibe un monto a entregar de vuelto (Redondea el vuelto al 
+    multiplo de 5 mas cercano.), calcula las con todas las posibles combinaciones 
+    de billetes a dar de vuelto, consulta la BD "Caja registradora" para 
+    obtener la informacion de billetes disponibles y devuelve la combinacion 
+    de billetes a dar como vuelto.
     '''
+
+    # Lanzar excepción ante la llegada de un numero negativo
+    if vuelto <= 0:
+        raise ValueError(f"No es posible entregar ${vuelto} como vuelto")
 
     # Redondear el vuelto al multiplo de 5 mas cercano
     vuelto_multiplo_de_5 = round(vuelto / 5) * 5
@@ -21,21 +54,25 @@ def calculo_vuelto_prolog(vuelto):
     # Esta lista contiene todas las posibilidades de vuelto que se pueden dar
     resultado = list(prolog.query(f"calcular_vuelto({vuelto_multiplo_de_5}, Resultado)"))
 
+    # Si el resultado existe, procesas la lista obtenida. Si no, lanzar una excepción
     if resultado:
         # Remover duplicados de la lista
-        lista_sin_duplicados = remover_duplicados(resultado)
+        lista_sin_duplicados = __remover_duplicados__(resultado)
 
         # Procesar vuelto como diccionario
-        vuelto_procesado = procesar_vuelto(lista_sin_duplicados)
+        vuelto_procesado = __procesar_vuelto__(lista_sin_duplicados)
 
-        # Retornar la lista sin duplicados
-        return vuelto_procesado
+        # Buscar el vuelto valido segun los billetes disponibles
+        vuelto_valido = __encontrar_vuelto_valido__(vuelto_procesado)
+
+        # Retornar el Diccionario final de resultados
+        return vuelto_valido
     else:
         # Si no existe un resultado, lanzar una excepcion
         raise ValueError("No se encontró un resultado.")
 
 
-def remover_duplicados(lista):
+def __remover_duplicados__(lista):
     '''
     Esta funcion recibe y devuelve una lista sin elementos duplicados.
     '''
@@ -46,9 +83,11 @@ def remover_duplicados(lista):
     return lista_sin_duplicados
 
  
-def procesar_vuelto(vuelto):
+def __procesar_vuelto__(vuelto):
     '''
-    Esta funcion recibe un monto de vuelto y lo procesa para mostrarlo al usuario.
+    Esta funcion recibe un la lista de combinaciones de billetes como vuelto 
+    y lo procesa para generar un diccionario con los distintos resultados posibles.
+    Devuelve el diccionario ordenado.
     '''
     final = {}
     for i, item in enumerate(vuelto, start=1):
@@ -65,10 +104,16 @@ def procesar_vuelto(vuelto):
             # Crear clave para cada billete y agregar al diccionario
             final[resultado_clave][f"Billetes_{denominacion}"] = int(cantidad)
         
-    return ordenar_por_denominacion(final)
+    return __ordenar_por_denominacion__(final)
 
 
-def ordenar_por_denominacion(diccionario):
+def __ordenar_por_denominacion__(diccionario):
+    '''
+    Esta función recibe el diccionario procesado de combinaciones de billetes posibles como vuelto
+    y la ordena de manera que el primer resultado sea entregar la menor cantidad de billetes de la
+    mayor denominación posible.
+    '''
+
     # Definir las denominaciones en orden descendente
     denominaciones = ['Billetes_10000','Billetes_2000','Billetes_1000','Billetes_500','Billetes_200', 'Billetes_100', 'Billetes_50', 'Billetes_20', 'Billetes_10', 'Billetes_5']
 
@@ -84,9 +129,10 @@ def ordenar_por_denominacion(diccionario):
     nuevo_diccionario = {f'Resultado_{i+1}': valor for i, (_, valor) in enumerate(dict_ordenado.items())}
     return nuevo_diccionario
 
-def encontrar_vuelto_valido(resultados_vuelto):
+
+def __encontrar_vuelto_valido__(resultados_vuelto):
     '''
-    Esta función recibe un diccionario con los resultados de vuelto y 
+    Esta función recibe un diccionario con los resultados de vuelto (Salida de la funcion calculo_vuelto_prolog) y 
     determina cual es posible en base a los billetes disponibles a en la caja registradora.    
     '''
 
@@ -118,6 +164,7 @@ def encontrar_vuelto_valido(resultados_vuelto):
     return billetes_vuelto  # Retornar None si no se encuentra un resultado válido
 
 
+
 def vuelto_valido_to_string(vuelto_valido):
     '''
     Esta función recibe un diccionario con un vuelto válido y lo convierte en un string para mostrar al usuario.
@@ -136,3 +183,11 @@ def vuelto_valido_to_string(vuelto_valido):
 
 
 
+#### Funcion para validar que el archivo funciona correctamente
+
+vuelto_prueba = 500
+vuelto_prueba_calculado = calculo_vuelto_prolog(vuelto_prueba)
+# vuelto_prueba_calculado_2 = vuelto_valido_to_string(vuelto_prueba_calculado)
+
+print("Resultado: \n")
+print(vuelto_prueba_calculado)
