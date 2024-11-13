@@ -8,16 +8,14 @@ Alumnos:
 '''
 
 # Librerias
-
+from conversiones import tipo_de_cambio_ars_usd
+from caja_simulada import consultar_caja
 
 # Prototipos de funciones para conectar con el trabajo de los otros equipos:
-
 
 def consultar_tipo_estacionamiento():
     tipo = "General" #ejemplo
     return tipo
-
-
 
 def consultar_precio_estacionamiento(tipo_estacionamiento):
     '''
@@ -37,15 +35,10 @@ def consultar_precio_estacionamiento(tipo_estacionamiento):
 def convertir_dolar_a_pesos(monto):
     '''
     Consulta el valor actual del dolar en una base de datos antes
-    de realizar la conversión.
+    de realizar la conversión. Valor del dolar oficial! xD
     '''
 
-    # Esta funcion tiene que ir a consultar una BD de otro grupo.
-    # TODO - Implementar la consulta a la BD de precios
-    # TODO - Importar las librerías necesarias para la conexión a la BD
-    # TODO - Borrar linea de ejemplo
-
-    valor_dolar = 1200 #ejemplo
+    _, valor_dolar = tipo_de_cambio_ars_usd()
     return monto * valor_dolar
 
 def registrar_ingreso(tipo_estacionamiento, monto):
@@ -55,25 +48,9 @@ def registrar_ingreso(tipo_estacionamiento, monto):
     '''
     print(f'Se registró un ingreso de tipo {tipo_estacionamiento}, se cobró {monto}.')
 
-
 def consultar_caja_registradora():
     '''
     Consulta el monto actual en la caja registradora.
     '''
 
-    # TODO - Consultar la base de datos para cantidad de cada tipo de billetes
-    
-    cantidad_billetes = {
-        "Billetes_10000": 10,
-        "Billetes_2000": 5,
-        "Billetes_1000": 2,
-        "Billetes_500": 10,
-        "Billetes_200": 5,
-        "Billetes_100": 2,
-        "Billetes_50": 10,
-        "Billetes_20": 5,
-        "Billetes_10": 2,
-        "Billetes_5": 10
-    }
-
-    return cantidad_billetes
+    return consultar_caja()
