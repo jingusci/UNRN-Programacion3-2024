@@ -11,6 +11,8 @@ Alumnos:
 from calculo_vuelto import *
 from consultas_bd import *
 from recon_billetes import *
+from caja_simulada import *
+
 
 # Prototipos de funciones para interactuar con el usuario:
 
