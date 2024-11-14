@@ -10,7 +10,7 @@ Alumnos:
 import json
 import random
 
-def inicializar_caja():
+def inicializar_caja_random():
     '''
     Inicializar la caja en un estado aleatorio.
     La cantidad maxima de billetes de cada denominacion son 500.
@@ -118,7 +118,7 @@ if __name__ == "__main__":
     }
 
     # Operaciones nominales    
-    print(inicializar_caja())
+    print(inicializar_caja_random())
     print('\n')
     print(consultar_caja())
     print('\n')
