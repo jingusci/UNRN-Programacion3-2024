@@ -7,15 +7,19 @@ Alumnos:
  - Joaquín Rodríguez
 
 Éste módulo mantiene la cuenta de la cantidad de billetes de cada
-denominación que hay en la caja registradora.
+denominación que hay en la caja registradora. Los datos se mantienen
+en un archivo json.
 
-Los datos se mantienen en un archivo json.
+Todas las funciones que reciben cantidades de dinero como argumento,
+esperan un diccionario en el cual las llaves son denominaciones (las
+que aparecen en la lista DENOMINACIONES son la únicas válidas) y los
+valores son cantidades de billetes.
 '''
 
 import json
 import random
 
-_DENOMINACIONES = ["ARS_10000", "ARS_2000", "ARS_1000", "ARS_500", "ARS_200", "ARS_100", "ARS_50", "ARS_20", "ARS_10", "ARS_5", "USD_100", "USD_50", "USD_20", "USD_10", "USD_5", "USD_2", "USD_1"]
+DENOMINACIONES = ["ARS_10000", "ARS_2000", "ARS_1000", "ARS_500", "ARS_200", "ARS_100", "ARS_50", "ARS_20", "ARS_10", "ARS_5", "USD_100", "USD_50", "USD_20", "USD_10", "USD_5", "USD_2", "USD_1"]
 
 _filename = 'caja_simulada.json'
 
@@ -75,3 +79,15 @@ def retirar(egreso):
         cantidad[denominacion] -= cantidad
 
     _escribir_datos(cantidades)
+
+def se_puede_retirar(combinación):
+    cantidades_disponibles = consultar()
+
+    alcanza = True
+    for denominación, cantidad_solicitada in combinación:
+        if cantidad_solicitada > cantidades_disponibles[denominación]:
+            alcanza = False
+            break
+    
+    return alcanza
+
