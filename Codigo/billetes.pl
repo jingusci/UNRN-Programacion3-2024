@@ -1,22 +1,35 @@
 % Base de conocimientos de billetes
-billete(10000).
-billete(2000).
-billete(1000).
-billete(500).
-billete(200).
-billete(100).
-billete(50).
-billete(20).
-billete(10).
-billete(5).
+billete(ars, 10000).
+billete(ars, 2000).
+billete(ars, 1000).
+billete(ars, 500).
+billete(ars, 200).
+billete(ars, 100).
+billete(ars, 50).
+billete(ars, 20).
+billete(ars, 10).
+billete(ars, 5).
 
-todos_los_billetes(Lista) :-
-    setof(Valor, billete(Valor), ListaAscentente),
+billete(usd, 100).
+billete(usd, 50).
+billete(usd, 20).
+billete(usd, 10).
+billete(usd, 5).
+billete(usd, 2).
+billete(usd, 1).
+
+todos_los_billetes(Moneda, Lista) :-
+    setof(Valor, billete(Moneda, Valor), ListaAscentente),
     reverse(ListaAscentente, Lista).
 
-% Regla para calcular la cantidad de billetes a entregar
-billetes_suman(Total, BilletesUsados) :-
-    todos_los_billetes(BilletesPosibles),
+% Regla para calcular la cantidad de billetes a entregar:
+% Al evaluar billetes_suman(moneda, monto, X), se obtienen todas las combinaciones
+% de billetes que suman monto. Las combinaciones están ordenadas de manera
+% que las primeras de la lista usan la mayor cantidad posible de los
+% billetes más grandes.
+
+billetes_suman(Moneda, Total, BilletesUsados) :-
+    todos_los_billetes(Moneda, BilletesPosibles),
     billetes_suman_usando(Total, BilletesUsados, BilletesPosibles).
 
 % caso base: si el total es 0 la lista de billetes está vacía.
