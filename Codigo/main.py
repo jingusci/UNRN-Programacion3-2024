@@ -54,6 +54,9 @@ def recibir_billetes(valor_estacionamiento):
     monto_ingresado = 0
     while monto_ingresado < valor_estacionamiento:
         print('Ingrese un billete.')
+         # TODO: La funcion identificar_billete() toma un path e identifica la imagen
+         # Se puede hacer una funcion dummy escanear_billete(), 
+         # que copie imagenes a un cierto path y devuelva ese path.
         valido, denominacion, moneda = identificar_billete()
 
         if valido:

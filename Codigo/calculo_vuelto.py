@@ -39,6 +39,8 @@ def calculo_vuelto_prolog(vuelto):
     de billetes a dar como vuelto.
     '''
 
+    retorno = None
+
     # Lanzar excepción ante la llegada de un numero negativo
     if vuelto <= 0:
         raise ValueError(f"No es posible entregar ${vuelto} como vuelto")
@@ -48,7 +50,7 @@ def calculo_vuelto_prolog(vuelto):
 
     ### Abrir el archivo prolog
     prolog = Prolog()
-    prolog.consult("billetes_v2.pl")
+    prolog.consult("billetes_v2.pl") # TODO: Eliminar la v1 si nos quedamos con esta version.
 
     # Ejecutar la consulta prolog y convertir el resultado en una lista
     # Esta lista contiene todas las posibilidades de vuelto que se pueden dar
@@ -65,12 +67,13 @@ def calculo_vuelto_prolog(vuelto):
         # Buscar el vuelto valido segun los billetes disponibles
         vuelto_valido = __encontrar_vuelto_valido__(vuelto_procesado)
 
-        # Retornar el Diccionario final de resultados
-        return vuelto_valido
+        # Retornar el Diccionario final de resultados: None o Diccionario valido
+        retorno = vuelto_valido
     else:
         # Si no existe un resultado, lanzar una excepcion
         raise ValueError("No se encontró un resultado.")
 
+    return retorno
 
 def __remover_duplicados__(lista):
     '''
@@ -102,7 +105,7 @@ def __procesar_vuelto__(vuelto):
             denominacion, cantidad = billete.split(", ")
             
             # Crear clave para cada billete y agregar al diccionario
-            final[resultado_clave][f"Billetes_{denominacion}"] = int(cantidad)
+            final[resultado_clave][f"ARS_{denominacion}"] = int(cantidad)
         
     return __ordenar_por_denominacion__(final)
 
@@ -136,58 +139,60 @@ def __encontrar_vuelto_valido__(resultados_vuelto):
     determina cual es posible en base a los billetes disponibles a en la caja registradora.    
     '''
 
+    retorno = None
+    
+    # Se omiten los vueltos en dolares.
     billetes_vuelto = {
-        "Billetes_10000": 0,
-        "Billetes_2000": 0,
-        "Billetes_1000": 0,
-        "Billetes_500": 0,
-        "Billetes_200": 0,
-        "Billetes_100": 0,
-        "Billetes_50": 0,
-        "Billetes_20": 0,
-        "Billetes_10": 0,
-        "Billetes_5": 0
+        "ARS_10000": 0,
+        "ARS_2000": 0,
+        "ARS_1000": 0,
+        "ARS_500": 0,
+        "ARS_200": 0,
+        "ARS_100": 0,
+        "ARS_50": 0,
+        "ARS_20": 0,
+        "ARS_10": 0,
+        "ARS_5": 0
     }
 
     datos_caja = consultar_caja_registradora()
-    for clave, billetes_necesarios in resultados_vuelto.items():
+    for _, billetes_necesarios in resultados_vuelto.items():
         es_valido = True
         for billete, cantidad in billetes_necesarios.items():
             # Verificar si hay suficientes billetes en la caja
-            if datos_caja.get(billete, 0) < cantidad:
+            if datos_caja[billete] < cantidad:
                 es_valido = False
                 break
         if es_valido:
-            # return {clave: billetes_necesarios}
             for key, value in billetes_necesarios.items():
                 billetes_vuelto[key] += value
-    return billetes_vuelto  # Retornar None si no se encuentra un resultado válido
-
-
+            retorno = billetes_vuelto
+            break
+    return retorno
 
 def vuelto_valido_to_string(vuelto_valido):
     '''
     Esta función recibe un diccionario con un vuelto válido y lo convierte en un string para mostrar al usuario.
     '''
+    retorno = ''
     if vuelto_valido:
-        for clave, billetes in vuelto_valido.items():
-            resultado = f"Entregar: "
-            for billete, cantidad in billetes.items():
-                resultado += f"{cantidad} billetes de ${billete[9:]}, "
-            resultado = resultado.rstrip(', ')
-            return resultado
+        resultado = f"Entregar: "
+        for billete, cantidad in vuelto_valido.items():
+            resultado += f"{cantidad} billetes de ${billete[4:]}, "
+        resultado = resultado.rstrip(', ')
+        retorno = resultado
     else:
-        return "No hay vuelto disponible."
+        retorno = "No hay vuelto disponible."
+    return retorno
         
-                
+if __name__ == "__main__":
 
-
-
-#### Funcion para validar que el archivo funciona correctamente
-
-vuelto_prueba = 500
-vuelto_prueba_calculado = calculo_vuelto_prolog(vuelto_prueba)
-# vuelto_prueba_calculado_2 = vuelto_valido_to_string(vuelto_prueba_calculado)
-
-print("Resultado: \n")
-print(vuelto_prueba_calculado)
+    # Caja simulada para este ejemplo:
+    # {"ARS_10000": 0, "ARS_2000": 0, "ARS_1000": 0, "ARS_500": 1, "ARS_200": 2, "ARS_100": 1,
+    #  "ARS_50": 0, "ARS_20": 0, "ARS_10": 0, "ARS_5": 0,
+    #  "USD_100": 0, "USD_50": 0, "USD_20": 0, "USD_10": 0, "USD_5": 0, "USD_2": 0, "USD_1": 0}
+    vuelto_prueba = 500
+    vuelto_prueba_calculado = calculo_vuelto_prolog(vuelto_prueba)
+    print("Resultado: \n")
+    print(vuelto_prueba_calculado)
+    print(vuelto_valido_to_string(vuelto_prueba_calculado))
