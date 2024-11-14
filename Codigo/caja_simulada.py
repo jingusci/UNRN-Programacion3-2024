@@ -5,131 +5,73 @@ Alumnos:
  - Javier Ingusci
  - Enrique Mariotti
  - Joaquín Rodríguez
+
+Éste módulo mantiene la cuenta de la cantidad de billetes de cada
+denominación que hay en la caja registradora.
+
+Los datos se mantienen en un archivo json.
 '''
 
 import json
 import random
 
-def inicializar_caja():
+_DENOMINACIONES = ["ARS_10000", "ARS_2000", "ARS_1000", "ARS_500", "ARS_200", "ARS_100", "ARS_50", "ARS_20", "ARS_10", "ARS_5", "USD_100", "USD_50", "USD_20", "USD_10", "USD_5", "USD_2", "USD_1"]
+
+_filename = 'caja_simulada.json'
+
+def _escribir_datos(valores):
     '''
-    Inicializar la caja en un estado aleatorio.
-    La cantidad maxima de billetes de cada denominacion son 500.
+    Recibe un diccionario con las cantidades de cada denominación y
+    lo escribe al archivo.
     '''
-    caja_simulada = {
-        "ARS_10000":    0,
-        "ARS_2000":     0,
-        "ARS_1000":     0,
-        "ARS_500":      0,
-        "ARS_200":      0,
-        "ARS_100":      0,
-        "ARS_50":       0,
-        "ARS_20":       0,
-        "ARS_10":       0,
-        "ARS_5":        0,
-        "USD_100":      0,
-        "USD_50":       0,
-        "USD_20":       0,
-        "USD_10":       0,
-        "USD_5":        0,
-        "USD_2":        0,
-        "USD_1":        0
-    }
+    with open(_filename, 'w') as json_file:
+        valores = json.dump(valores, json_file)
 
-    # Inicializar los valores de la caja
-    for key, value in caja_simulada.items():
-        caja_simulada[key] = random.randint(0, 500)
-
-    # Convertir a json
-    with open("caja_simulada.json", "w") as json_file: 
-        json.dump(caja_simulada, json_file)
-
-    return caja_simulada
-
-
-def consultar_caja():
+def consultar():
     '''
-    Consulta a la caja simulada.
+    Devuelve un diccionario con los datos leídos del archivo.
     '''
-    # Abrir json
-    with open('caja_simulada.json') as json_file:
-        caja_simulada = json.load(json_file)
-
-    return caja_simulada
-
-def ingreso_caja(ingreso):
-    '''
-    Ingreso a caja (ARS o USD).
-    '''
-    # Abrir json
-    with open('caja_simulada.json') as json_file:
-        caja_simulada = json.load(json_file)
-
-    # Sumar billetes segun denominaciones
-    for key, value in caja_simulada.items():
-        caja_simulada[key] += ingreso[key]
-
-    # Convertir a json
-    with open("caja_simulada.json", "w") as json_file: 
-        json.dump(caja_simulada, json_file)
-
-    return caja_simulada
-
-def egreso_caja(egreso):
-    '''
-    Egreso a caja (ARS).
-    '''
-    # Abrir json
-    with open('caja_simulada.json') as json_file:
-        caja_simulada = json.load(json_file)
-
-    # Sumar billetes segun denominaciones
-    for key, value in caja_simulada.items():
-        caja_simulada[key] -= egreso[key]
-        if caja_simulada[key] < 0:
-            caja_simulada[key] = 0
-
-    # Convertir a json
-    with open("caja_simulada.json", "w") as json_file: 
-        json.dump(caja_simulada, json_file)
-
-    return caja_simulada
-
-# Ejecución del programa
-if __name__ == "__main__":
-
-    monto = {
-        "ARS_10000":    0,
-        "ARS_2000":     0,
-        "ARS_1000":     0,
-        "ARS_500":      0,
-        "ARS_200":      0,
-        "ARS_100":      0,
-        "ARS_50":       0,
-        "ARS_20":       10,
-        "ARS_10":       0,
-        "ARS_5":        0,
-        "USD_100":      0,
-        "USD_50":       0,
-        "USD_20":       0,
-        "USD_10":       0,
-        "USD_5":        0,
-        "USD_2":        0,
-        "USD_1":        0
-    }
-
-    # Operaciones nominales    
-    print(inicializar_caja())
-    print('\n')
-    print(consultar_caja())
-    print('\n')
-    print(ingreso_caja(monto))
-    print('\n')
-    print(egreso_caja(monto))
-    print('\n')
-
-    # Casos de error
-    monto['ARS_20'] = 10* consultar_caja()['ARS_20']
-    print(egreso_caja(monto))
-
-
+    with open(_filename, 'r') as json_file:
+        valores = json.load(json_file)
     
+    return valores
+
+def randomizar():
+    '''
+    Inicializa la caja en un estado aleatorio.
+    La cantidad maxima de billetes de cada denominación es 500.
+    '''
+    cantidades = {denominacion: random.randint(0, 500) for denominacion in _DENOMINACIONES}
+    _escribir_datos(cantidades)
+
+def ingresar(ingreso):
+    '''
+    Registra ingreso de billetes a la caja.
+    ingreso debe ser un diccionario con denominaciones como llaves.
+    '''
+    cantidades = consultar()
+
+    # Sumar billetes según denominaciones
+    for denominacion, cantidad in ingreso.items():
+        cantidad[denominacion] += cantidad
+
+    _escribir_datos(cantidades)
+
+def retirar(egreso):
+    '''
+    Retira dinero de la caja.
+    egreso debe ser un diccionario con denominaiones como llaves.
+    Se levanta una excepción si no alcanza el dinero en la caja.
+    '''
+    cantidades = consultar()
+
+    # Verificar que se puede entregar la cantidad solicitada:
+    for denominacion, cantidad_solicitada in egreso.items():
+        if cantidades[denominacion] < cantidad_solicitada:
+            raise ValueError(f'No se pueden entregar {cantidad_solicitada} billetes de {denominacion}. El máximo disponible es {cantidades[denominacion]}.')
+    
+    # Restar billetes retirados:
+    for denominacion, cantidad in egreso.items():
+        cantidad[denominacion] -= cantidad
+
+    _escribir_datos(cantidades)
