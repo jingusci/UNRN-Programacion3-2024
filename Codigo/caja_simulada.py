@@ -45,7 +45,7 @@ def randomizar():
     Inicializa la caja en un estado aleatorio.
     La cantidad maxima de billetes de cada denominación es 500.
     '''
-    cantidades = {denominacion: random.randint(0, 500) for denominacion in _DENOMINACIONES}
+    cantidades = {denominacion: random.randint(0, 500) for denominacion in DENOMINACIONES}
     _escribir_datos(cantidades)
 
 def ingresar(ingreso):
@@ -84,7 +84,7 @@ def se_puede_retirar(combinación):
     cantidades_disponibles = consultar()
 
     alcanza = True
-    for denominación, cantidad_solicitada in combinación:
+    for denominación, cantidad_solicitada in combinación.items():
         if cantidad_solicitada > cantidades_disponibles[denominación]:
             alcanza = False
             break
