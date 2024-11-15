@@ -40,7 +40,7 @@ def combinaciones_que_suman(monto, moneda):
         
         yield combinación_dict
 
-def elejir_billetes(monto, moneda):
+def elegir_billetes(monto, moneda):
     '''
     Calcula qué billetes devolver.
 
