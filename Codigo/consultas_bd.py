@@ -5,11 +5,12 @@ Alumnos:
  - Javier Ingusci
  - Enrique Mariotti
  - Joaquín Rodríguez
-'''
 
-# Librerias
-from conversiones import tipo_de_cambio_ars_usd
-from caja_simulada import consultar_caja
+ Este módulo hace consultas a las distintas bases de datos.
+'''
+import requests
+from bs4 import BeautifulSoup as bs
+from dateutil.parser import parse
 
 # Prototipos de funciones para conectar con el trabajo de los otros equipos:
 
@@ -34,12 +35,12 @@ def consultar_precio_estacionamiento(tipo_estacionamiento):
 
 def convertir_dolar_a_pesos(monto):
     '''
-    Consulta el valor actual del dolar en una base de datos antes
-    de realizar la conversión. Valor del dolar oficial! xD
+    Consulta el valor actual del dolar online para convertir el monto dado a pesos argentinos.
+    Valor del dolar oficial! xD
     '''
-
-    _, valor_dolar = tipo_de_cambio_ars_usd()
-    return monto * valor_dolar
+    content = requests.get(f"https://www.x-rates.com/table/?from=USD&amount={monto}").content
+    soup = bs(content, "html.parser")
+    return float(soup.find(attrs={'href':'https://www.x-rates.com/graph/?from=USD&to=ARS'}).text)
 
 def registrar_ingreso(tipo_estacionamiento, monto):
     '''
