@@ -34,12 +34,15 @@ palabras_claves = {
 
 def escanear_billete():
     '''
-    Esta función es un dummy, devuelve un path a una imagen.
+    Esta función es un dummy, devuelve un path a una imagen al azar.
     '''
-    # Elegir elegir un billete al azar:
-    path = '' #TODO: agregar una acarpeta con fotos de billetes
-    file_list = [f for f in os.listdir(directory_path) if os.path.isfile(os.path.join(directory_path, f))]
-    return random.choice(file_list)
+    # Ruta a la carpeta
+    path = 'imagenes_billetes' #TODO: agregar una acarpeta con fotos de billetes
+    # Lista de archivos en la carpeta
+    file_list = [f for f in os.listdir(path) if os.path.isfile(os.path.join(path, f))]
+    # Elegir un archivo al azar
+    return_path = path + '/' + str(random.choice(file_list))
+    return return_path
 
 def identificar_billete(path):
     '''
@@ -87,7 +90,7 @@ def reconocer_texto(texto):
 
     if valido:
         moneda = keys_coincidencias[0].split('_')[0]
-        denominacion = keys_coincidencias[0].split('_')[1]
+        denominacion = int(keys_coincidencias[0].split('_')[1])
     else:
         denominacion = None
         moneda = None
