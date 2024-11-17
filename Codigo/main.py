@@ -46,6 +46,7 @@ def cobrar(valor_estacionamiento):
 
         if valido:
             print(f"Billete de ${denominacion} {moneda} aceptado.")
+            caja.ingresar({f"{moneda}_{denominacion}": 1})
             if moneda == "USD":
                 denominacion = consultas_bd.convertir_dolar_a_pesos(denominacion)
             monto_ingresado += denominacion
@@ -78,9 +79,12 @@ def cobrar_estacionamiento():
 # ---  Función principal del programa  ---
 
 def main():
+    caja.randomizar()
     while True:
         esperar_nuevo_cliente()
+        print("Caja Inicial: \n", caja.caja_simulada_to_string())
         cobrar_estacionamiento()
+        print("Caja Final: \n", caja.caja_simulada_to_string())
         if input("Cobrar de nuevo [s - n]:  ").lower() != 's': break
 
 if __name__ == "__main__":
