@@ -9,6 +9,8 @@ Alumnos:
 
 import re
 from gradio_client import Client, handle_file
+import os
+import random
 
 palabras_claves = {
         "ARS_10000":    ['10000','argentina'],
@@ -29,6 +31,15 @@ palabras_claves = {
         "USD_2":        ['2','united', 'states', 'america'],
         "USD_1":        ['1','united', 'states', 'america']
     }
+
+def escanear_billete():
+    '''
+    Esta función es un dummy, devuelve un path a una imagen.
+    '''
+    # Elegir elegir un billete al azar:
+    path = '' #TODO: agregar una acarpeta con fotos de billetes
+    file_list = [f for f in os.listdir(directory_path) if os.path.isfile(os.path.join(directory_path, f))]
+    return random.choice(file_list)
 
 def identificar_billete(path):
     '''

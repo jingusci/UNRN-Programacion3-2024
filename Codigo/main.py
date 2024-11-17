@@ -6,15 +6,12 @@ Alumnos:
  - Enrique Mariotti
  - Joaquín Rodríguez
 '''
+import calculo_vuelto
+import consultas_bd
+import recon_billetes
+import caja_simulada as caja
 
-# Librerias
-from calculo_vuelto import *
-from consultas_bd import *
-from recon_billetes import *
-from caja_simulada import *
-
-
-# Prototipos de funciones para interactuar con el usuario:
+# Funciones para interactuar con el usuario:
 
 def esperar_nuevo_cliente():
     '''
@@ -24,46 +21,34 @@ def esperar_nuevo_cliente():
     pass
 
 
-def entregar_vuelto(monto_ingresado, valor_estacionamiento):
+def entregar_vuelto(moneda, monto_ingresado, valor_estacionamiento):
     '''
-    Funcion para calcular el vuelto e indicar la combinacion 
-    de billetes a entregar.
+    Calcular el vuelto y lo entrega al cliente.
     '''
-
-    # Calculo del vuelto
     vuelto = monto_ingresado - valor_estacionamiento
+    billetes_a_entregar = calculo_vuelto.elegir_billetes(vuelto, moneda)
+    caja.retirar(billetes_a_entregar)
 
-    # Calculo de billetes a entregar (consulta al prolog)
-    vuelto_completo = calculo_vuelto_prolog(vuelto)
-
-    # Encontrar vuelto valido
-    vuelto_valido = encontrar_vuelto_valido(vuelto_completo)
-
-    # Resultado del vuelto -> Impresion por pantalla
-    # TODO - Cambiar a un return
-    print(f"Vuelto a entregar: ${vuelto}.\n")
-    # print(vuelto_valido_to_string(vuelto_valido))
+    print(f"Se entregó ${vuelto} {moneda} de vuelto.")
 
 
-def recibir_billetes(valor_estacionamiento):
+def cobrar(valor_estacionamiento):
     '''
     Recibe billetes hasta alcanzar el monto, y entrega el vuelto que corresponda.
     '''
-    print(f'Monto a ingresar: ${valor_estacionamiento}.')
+    print(f'Monto a ingresar: ${valor_estacionamiento} ARS.')
 
     monto_ingresado = 0
     while monto_ingresado < valor_estacionamiento:
         print('Ingrese un billete.')
-         # TODO: La funcion identificar_billete() toma un path e identifica la imagen
-         # Se puede hacer una funcion dummy escanear_billete(), 
-         # que copie imagenes a un cierto path y devuelva ese path.
-        valido, denominacion, moneda = identificar_billete()
+        imagen = recon_billetes.escanear_billete() # dummy, devuelve un path a una imagen
+        valido, denominacion, moneda = recon_billetes.identificar_billete(imagen)
 
         if valido:
-            if moneda == "USD":
-                denominacion = convertir_dolar_a_pesos(denominacion)
-            monto_ingresado += denominacion
             print(f"Billete de ${denominacion} {moneda} aceptado.")
+            if moneda == "USD":
+                denominacion = consultas_bd.convertir_dolar_a_pesos(denominacion)
+            monto_ingresado += denominacion
         else:
             print("Billete inválido, devuelto al cliente.")
         
@@ -71,37 +56,32 @@ def recibir_billetes(valor_estacionamiento):
 
     # Si cuando sale del bucle el costo es mayor, significa que debemos dar vuelto
     if monto_ingresado > valor_estacionamiento:
-        entregar_vuelto(monto_ingresado, valor_estacionamiento)
+        entregar_vuelto('ARS', monto_ingresado, valor_estacionamiento)
+        #TODO: decidir cuando entregar el vuelto en ARS y cuando en USD.
 
 def entregar_comprobante(monto):
     '''
     Imprime un comprobante para el usuario.
     '''
-    print(f"Se imprimió un comprobante por un cobro de ${monto}.")
+    print(f"Se imprimió un comprobante por un cobro de ${monto} ARS.")
 
 # Lógica de funcionamiento:
 
 def cobrar_estacionamiento():
-    tipo_estacionamiento = consultar_tipo_estacionamiento()
-    valor_estacionamiento = consultar_precio_estacionamiento(tipo_estacionamiento)
-    recibir_billetes(valor_estacionamiento)
+    tipo_estacionamiento = consultas_bd.consultar_tipo_estacionamiento()
+    valor_estacionamiento = consultas_bd.consultar_precio_estacionamiento(tipo_estacionamiento)
+    cobrar(valor_estacionamiento)
     entregar_comprobante(valor_estacionamiento)
-    registrar_ingreso(tipo_estacionamiento, valor_estacionamiento)
+    consultas_bd.registrar_ingreso(tipo_estacionamiento, valor_estacionamiento)
 
 
 # ---  Función principal del programa  ---
 
 def main():
-    '''
-    Función principal del programa.    
-    '''
     while True:
         esperar_nuevo_cliente()
         cobrar_estacionamiento()
         if input("Cobrar de nuevo [s - n]:  ").lower() != 's': break
 
-
-
-# Ejecución del programa
 if __name__ == "__main__":
     main()
