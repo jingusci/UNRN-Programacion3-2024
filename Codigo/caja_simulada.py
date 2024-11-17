@@ -45,7 +45,7 @@ def randomizar():
     Inicializa la caja en un estado aleatorio.
     La cantidad maxima de billetes de cada denominación es 500.
     '''
-    cantidades = {denominacion: random.randint(0, 500) for denominacion in DENOMINACIONES}
+    cantidades = {denominacion: random.randint(0, 10) for denominacion in DENOMINACIONES}
     _escribir_datos(cantidades)
 
 def ingresar(ingreso):
@@ -57,8 +57,7 @@ def ingresar(ingreso):
 
     # Sumar billetes según denominaciones
     for denominacion, cantidad in ingreso.items():
-        cantidad[denominacion] += cantidad
-
+        cantidades[denominacion] += cantidad
     _escribir_datos(cantidades)
 
 def retirar(egreso):
@@ -76,7 +75,7 @@ def retirar(egreso):
     
     # Restar billetes retirados:
     for denominacion, cantidad in egreso.items():
-        cantidad[denominacion] -= cantidad
+        cantidades[denominacion] -= cantidad
 
     _escribir_datos(cantidades)
 
@@ -91,3 +90,10 @@ def se_puede_retirar(combinación):
     
     return alcanza
 
+def caja_simulada_to_string():
+    '''
+    Devuelve un string con la cantidad de billetes de cada denominación
+    en la caja.
+    '''
+    cantidades = consultar()
+    return '\n'.join(f'{denominacion}: {cantidad}' for denominacion, cantidad in cantidades.items())
