@@ -42,6 +42,8 @@ def escanear_billete():
     file_list = [f for f in os.listdir(path) if os.path.isfile(os.path.join(path, f))]
     # Elegir un archivo al azar
     return_path = path + '/' + str(random.choice(file_list))
+    
+    print(f"Billete elegido: {return_path}")
     return return_path
 
 def identificar_billete(path):
