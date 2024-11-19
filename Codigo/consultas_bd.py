@@ -40,7 +40,8 @@ def convertir_dolar_a_pesos(monto):
     '''
     content = requests.get(f"https://www.x-rates.com/table/?from=USD&amount={monto}").content
     soup = bs(content, "html.parser")
-    return float(soup.find(attrs={'href':'https://www.x-rates.com/graph/?from=USD&to=ARS'}).text)
+
+    return int(soup.find(attrs={'href':'https://www.x-rates.com/graph/?from=USD&to=ARS'}).text.split(".")[0])
 
 def registrar_ingreso(tipo_estacionamiento, monto):
     '''
