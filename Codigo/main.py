@@ -17,8 +17,12 @@ import sys
 def entregar_vuelto(moneda, monto_ingresado, valor_estacionamiento):
     '''
     Calcular el vuelto y lo entrega al cliente.
+    Si la moneda es pesos, el monto se redondea al múltiplo de 5 más cercano.
     '''
     vuelto = monto_ingresado - valor_estacionamiento
+    if moneda.upper() == 'ARS':
+        vuelto = round(vuelto / 5) * 5
+
     billetes_a_entregar = calculo_vuelto.elegir_billetes(vuelto, moneda)
     caja.retirar(billetes_a_entregar)
 
@@ -72,6 +76,10 @@ def cobrar_estacionamiento(valor_estacionamiento):
 # ---  Función principal del programa  ---
 
 def main(monto_a_cobrar):
+
+    if monto_a_cobrar <= 0:
+        raise RuntimeError('Monto invalido.')
+    
     print("Generando una caja aleatoria...")
     caja.randomizar()
     print("") ## Separador
