@@ -45,15 +45,13 @@ def elegir_billetes(monto, moneda):
     Calcula qué billetes devolver.
 
     Recibe un monto y una moneda, y usa consultas a prolog y a la caja
-    registradora para determinar qué billetes devolver. Si la moneda son
-    pesos, el monto se redondea al múltiplo de 5 más cercano.
+    registradora para determinar qué billetes devolver. 
 
     La consulta a prolog genera una lista de todas las combinaciones posibles,
     y de esa lista se elije la primera combinación para la cual hay suficientes
     billetes en la caja.
     '''
-    if moneda.upper() == 'ARS':
-        monto = round(monto / 5) * 5
+    
 
     for combinación in combinaciones_que_suman(monto, moneda):
         if caja.se_puede_retirar(combinación):
