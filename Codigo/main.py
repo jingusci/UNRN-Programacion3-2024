@@ -10,22 +10,19 @@ import calculo_vuelto
 import consultas_bd
 import recon_billetes
 import caja_simulada as caja
+import sys
 
 # Funciones para interactuar con el usuario:
-
-def esperar_nuevo_cliente():
-    '''
-    Espera hasta que el sistema se active por la llegada
-    de un auto.
-    '''
-    pass
-
 
 def entregar_vuelto(moneda, monto_ingresado, valor_estacionamiento):
     '''
     Calcular el vuelto y lo entrega al cliente.
+    Si la moneda es pesos, el monto se redondea al múltiplo de 5 más cercano.
     '''
     vuelto = monto_ingresado - valor_estacionamiento
+    if moneda.upper() == 'ARS':
+        vuelto = round(vuelto / 5) * 5
+
     billetes_a_entregar = calculo_vuelto.elegir_billetes(vuelto, moneda)
     caja.retirar(billetes_a_entregar)
 
@@ -36,7 +33,7 @@ def cobrar(valor_estacionamiento):
     '''
     Recibe billetes hasta alcanzar el monto, y entrega el vuelto que corresponda.
     '''
-    print(f'Monto a ingresar: ${valor_estacionamiento} ARS.')
+    print(f'Ingrese billetes. \nMonto total a ingresar: ${valor_estacionamiento} ARS.')
 
     monto_ingresado = 0
     while monto_ingresado < valor_estacionamiento:
@@ -68,9 +65,9 @@ def entregar_comprobante(monto):
 
 # Lógica de funcionamiento:
 
-def cobrar_estacionamiento():
+def cobrar_estacionamiento(valor_estacionamiento):
     tipo_estacionamiento = consultas_bd.consultar_tipo_estacionamiento()
-    valor_estacionamiento = consultas_bd.consultar_precio_estacionamiento(tipo_estacionamiento)
+    # valor_estacionamiento = consultas_bd.consultar_precio_estacionamiento(tipo_estacionamiento)
     cobrar(valor_estacionamiento)
     entregar_comprobante(valor_estacionamiento)
     consultas_bd.registrar_ingreso(tipo_estacionamiento, valor_estacionamiento)
@@ -78,14 +75,41 @@ def cobrar_estacionamiento():
 
 # ---  Función principal del programa  ---
 
-def main():
-    caja.randomizar()
-    while True:
-        esperar_nuevo_cliente()
-        print("Caja Inicial: \n", caja.caja_simulada_to_string())
-        cobrar_estacionamiento()
-        print("Caja Final: \n", caja.caja_simulada_to_string())
-        if input("Cobrar de nuevo [s - n]:  ").lower() != 's': break
+def main(monto_a_cobrar):
 
+    if monto_a_cobrar <= 0:
+        raise RuntimeError('Monto invalido.')
+    
+    print("Generando una caja aleatoria...")
+    caja.randomizar()
+    print("") ## Separador
+
+    # while True:
+    # esperar_nuevo_cliente()
+    print("Caja Inicial: \n" + caja.caja_simulada_to_string())
+    print("") ## Separador
+    
+    print(f"Monto a cobrar de estacionamiento: ${monto_a_cobrar}")
+    cobrar_estacionamiento(monto_a_cobrar)
+
+    print("") ## Separador
+    print("Caja Final: \n" + caja.caja_simulada_to_string())
+    print("") ## Separador
+        
+
+# if __name__ == "__main__":
+#     main()
+
+## Con esta sección de codigo se puede recibir el monto a cobrar por consola    
 if __name__ == "__main__":
-    main()
+    if len(sys.argv) != 2:
+        print("Uso: python main.py <monto_a_cobrar>")
+        sys.exit(1)
+
+    try:
+        monto_a_cobrar = float(sys.argv[1])
+    except ValueError:
+        print("Error: <monto_a_cobrar> debe ser un número válido.")
+        sys.exit(1)
+
+    main(monto_a_cobrar)
