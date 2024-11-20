@@ -55,7 +55,6 @@ def cobrar(valor_estacionamiento):
     # Si cuando sale del bucle el costo es mayor, significa que debemos dar vuelto
     if monto_ingresado > valor_estacionamiento:
         entregar_vuelto('ARS', monto_ingresado, valor_estacionamiento)
-        #TODO: decidir cuando entregar el vuelto en ARS y cuando en USD.
 
 def entregar_comprobante(monto):
     '''
@@ -63,44 +62,15 @@ def entregar_comprobante(monto):
     '''
     print(f"Se imprimió un comprobante por un cobro de ${monto} ARS.")
 
-# Lógica de funcionamiento:
-
 def cobrar_estacionamiento(valor_estacionamiento):
-    tipo_estacionamiento = consultas_bd.consultar_tipo_estacionamiento()
-    # valor_estacionamiento = consultas_bd.consultar_precio_estacionamiento(tipo_estacionamiento)
+    '''
+    Funcion principal de cobro automatizado.
+    '''
     cobrar(valor_estacionamiento)
     entregar_comprobante(valor_estacionamiento)
-    consultas_bd.registrar_ingreso(tipo_estacionamiento, valor_estacionamiento)
+    consultas_bd.registrar_ingreso(valor_estacionamiento)
 
-
-# ---  Función principal del programa  ---
-
-def main(monto_a_cobrar):
-
-    if monto_a_cobrar <= 0:
-        raise RuntimeError('Monto invalido.')
-    
-    print("Generando una caja aleatoria...")
-    caja.randomizar()
-    print("") ## Separador
-
-    # while True:
-    # esperar_nuevo_cliente()
-    print("Caja Inicial: \n" + caja.caja_simulada_to_string())
-    print("") ## Separador
-    
-    print(f"Monto a cobrar de estacionamiento: ${monto_a_cobrar}")
-    cobrar_estacionamiento(monto_a_cobrar)
-
-    print("") ## Separador
-    print("Caja Final: \n" + caja.caja_simulada_to_string())
-    print("") ## Separador
-        
-
-# if __name__ == "__main__":
-#     main()
-
-## Con esta sección de codigo se puede recibir el monto a cobrar por consola    
+# Ejecucion del programa por consola    
 if __name__ == "__main__":
     if len(sys.argv) != 2:
         print("Uso: python main.py <monto_a_cobrar>")
@@ -112,4 +82,19 @@ if __name__ == "__main__":
         print("Error: <monto_a_cobrar> debe ser un número válido.")
         sys.exit(1)
 
-    main(monto_a_cobrar)
+    if monto_a_cobrar <= 0:
+        raise RuntimeError('Monto invalido.')
+    
+    print("Generando una caja aleatoria...")
+    caja.randomizar()
+    print("") ## Separador
+
+    print("Caja Inicial: \n" + caja.caja_simulada_to_string())
+    print("") ## Separador
+    
+    print(f"Monto a cobrar de estacionamiento: ${monto_a_cobrar}")
+    cobrar_estacionamiento(monto_a_cobrar)
+
+    print("") ## Separador
+    print("Caja Final: \n" + caja.caja_simulada_to_string())
+    print("") ## Separador
