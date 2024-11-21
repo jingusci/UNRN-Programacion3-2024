@@ -11,31 +11,39 @@ import consultas_bd
 import recon_billetes
 import caja_simulada as caja
 import sys
+from collections import Counter
 
 # Funciones para interactuar con el usuario:
 
 def entregar_vuelto(moneda, monto_ingresado, valor_estacionamiento):
     '''
-    Calcular el vuelto y lo entrega al cliente.
+    Calcula el vuelto y lo entrega al cliente.
     Si la moneda es pesos, el monto se redondea al múltiplo de 5 más cercano.
+    Devuelve True si se pudo entregar el vuelto, False si no hay billetes suficientes.
     '''
     vuelto = monto_ingresado - valor_estacionamiento
     if moneda.upper() == 'ARS':
         vuelto = round(vuelto / 5) * 5
 
     billetes_a_entregar = calculo_vuelto.elegir_billetes(vuelto, moneda)
-    caja.retirar(billetes_a_entregar)
-
-    print(f"Se entregó ${vuelto} {moneda} de vuelto.")
+    if billetes_a_entregar:
+        caja.retirar(billetes_a_entregar)
+        print(f"Se entregó ${vuelto} {moneda} de vuelto.")
+        return True
+    else:
+        return False
 
 
 def cobrar(valor_estacionamiento):
     '''
     Recibe billetes hasta alcanzar el monto, y entrega el vuelto que corresponda.
+    Devuelve True si el cobro se realiza correctamente, False si no se puede
+    entregar el vuelto.
     '''
     print(f'Ingrese billetes. \nMonto total a ingresar: ${valor_estacionamiento} ARS.')
 
     monto_ingresado = 0
+    billetes_ingresados = Counter()
     while monto_ingresado < valor_estacionamiento:
         print('Ingrese un billete.')
         imagen = recon_billetes.escanear_billete() # dummy, devuelve un path a una imagen
@@ -43,7 +51,7 @@ def cobrar(valor_estacionamiento):
 
         if valido:
             print(f"Billete de ${denominacion} {moneda} aceptado.")
-            caja.ingresar({f"{moneda}_{denominacion}": 1})
+            billetes_ingresados[f"{moneda}_{denominacion}"] += 1
             if moneda == "USD":
                 denominacion = consultas_bd.convertir_dolar_a_pesos(denominacion)
             monto_ingresado += denominacion
@@ -51,10 +59,20 @@ def cobrar(valor_estacionamiento):
             print("Billete inválido, devuelto al cliente.")
         
         print(f'Usted ingresó ${monto_ingresado} de ${valor_estacionamiento}.')
-
+    
     # Si cuando sale del bucle el costo es mayor, significa que debemos dar vuelto
     if monto_ingresado > valor_estacionamiento:
-        entregar_vuelto('ARS', monto_ingresado, valor_estacionamiento)
+        exito = entregar_vuelto('ARS', monto_ingresado, valor_estacionamiento)
+    else:
+        exito = True
+    
+    if exito:
+        caja.ingresar(billetes_ingresados)
+    else:
+        print('No hay billetes suficientes para entregar el vuelto.')
+        print('Se devuelven los billetes ingresados y se cancela la operación.')
+    
+    return exito
 
 def entregar_comprobante(monto):
     '''
@@ -65,10 +83,15 @@ def entregar_comprobante(monto):
 def cobrar_estacionamiento(valor_estacionamiento):
     '''
     Funcion principal de cobro automatizado.
+    Devuelve True si el cobro se realiza correctamente, False si
+    no se puede entregar el vuelto.
     '''
-    cobrar(valor_estacionamiento)
-    entregar_comprobante(valor_estacionamiento)
-    consultas_bd.registrar_ingreso(valor_estacionamiento)
+    exito = cobrar(valor_estacionamiento)
+    if exito:
+        entregar_comprobante(valor_estacionamiento)
+        consultas_bd.registrar_ingreso(valor_estacionamiento)
+    
+    return exito
 
 # Ejecucion del programa por consola    
 if __name__ == "__main__":

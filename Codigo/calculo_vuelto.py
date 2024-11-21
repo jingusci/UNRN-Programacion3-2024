@@ -50,6 +50,8 @@ def elegir_billetes(monto, moneda):
     La consulta a prolog genera una lista de todas las combinaciones posibles,
     y de esa lista se elije la primera combinación para la cual hay suficientes
     billetes en la caja.
+
+    Si no hay billetes suficientes para ninguna de las combinaciones, devuelve None.
     '''
     
 
@@ -57,7 +59,8 @@ def elegir_billetes(monto, moneda):
         if caja.se_puede_retirar(combinación):
             return combinación
     
-    raise RuntimeError(f'No hay billetes en la caja para entregar ${monto} {moneda}.')
+    # Si termina el for, no se puede retirar ninguna de las combinaciones.
+    return None
  
 
 def billetes_a_string(combinación):
