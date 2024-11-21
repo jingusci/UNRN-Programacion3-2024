@@ -1,0 +1,32 @@
+@startuml
+start
+
+:Consultar tipo de estacionamiento;
+:Consultar tabla de precios para obtener el valor;
+:Informar al usuario el costo del estacionamiento;
+
+repeat
+  :Recibir billetes (uno por uno);
+  if (¿El billete es válido?) then (Sí)
+    :Sumar valor del billete;
+    if (¿Es un billete en dólares?) then (Sí)
+      :Convertir a moneda local;
+    endif
+    :Registrar denominación del billete;
+    :Aumentar "contador de billetes recibidos";
+  else (No)
+    :Devolver billete al cliente;
+  endif
+repeat while (¿Monto total >= valor del estacionamiento?)
+
+if (¿Monto total > valor del estacionamiento?) then (Sí)
+  :Calcular vuelto;
+  :Revisar disponibilidad de billetes;
+  :Entregar cambio exacto;
+endif
+
+:Cobrar estacionamiento;
+:Entregar comprobante;
+
+stop
+@enduml

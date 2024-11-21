@@ -1,0 +1,40 @@
+@startuml
+start
+
+:Funcion Cobrar(valor_estacionamiento);
+
+:monto_ingresado = 0;
+:billetes_ingresados = Counter();
+
+repeat
+  :Solicitar billete;
+  :Reconocer billete;
+
+  if (¿Billete válido?) then (Sí)
+    :Registrar billete en "billetes_ingresados";
+
+    if (¿Moneda == USD?) then (Sí)
+      :Convertir a ARS;
+    endif
+
+    :Sumar denominación a "monto_ingresado";
+  else (No)
+    :Devolver billete invalido;
+  endif
+  
+repeat while (monto_ingresado < valor_estacionamiento)
+
+if (monto_ingresado > valor_estacionamiento) then (Sí)
+  :Calcular y entregar vuelto con "entregar_vuelto()";
+  if (¿Vuelto entregado con éxito?) then (Sí)
+    :Registrar billetes en caja;
+  else (No)
+    :Devolver billetes y cancelar operación;
+  endif
+else (No)
+  :Registrar billetes en caja;
+endif
+
+:Retornar resultado (True/False);
+stop
+@enduml

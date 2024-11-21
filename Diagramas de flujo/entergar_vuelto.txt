@@ -1,0 +1,21 @@
+@startuml
+start
+
+:Funcion Entregar_vuelto(moneda, monto_ingresado, valor_estacionamiento);
+
+:vuelto = monto_ingresado - valor_estacionamiento;
+
+:Redondear vuelto al múltiplo de 5 más cercano;
+
+:Elegir billetes de vuelto con sistema experto (prolog);
+
+if (¿Hay billetes disponibles?) then (Sí)
+  :Retirar billetes de la caja ;
+  :Entregar billetes;
+  :Retornar True;
+else (No)
+  :Retornar False;
+endif
+
+stop
+@enduml

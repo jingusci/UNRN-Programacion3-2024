@@ -1,0 +1,17 @@
+@startuml
+start
+
+:Inicio;
+:Cobrar estacionamiento (valor_estacionamiento);
+:exito = cobrar(valor_estacionamiento);
+
+
+if ( ¿exito == True? ) then (Sí)
+    :Entregar comprobante;
+    :Registrar cobro;
+endif
+
+:return exito;
+
+stop
+@enduml
